@@ -1,15 +1,15 @@
-from django.contrib.auth.models import User
+from django.contrib.auth.models import AbstractUser
 from django.db import models
 
 
-class EmailUser(User):
+class User(AbstractUser):
     pass
 
 
 class Email(models.Model):
-    user = models.ForeignKey("EmailUser", on_delete=models.CASCADE, related_name="emails")
-    sender = models.ForeignKey("EmailUser", on_delete=models.PROTECT, related_name="emails_sent")
-    recipients = models.ManyToManyField("EmailUser", related_name="emails_received")
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="emails")
+    sender = models.ForeignKey(User, on_delete=models.PROTECT, related_name="emails_sent")
+    recipients = models.ManyToManyField(User, related_name="emails_received")
     subject = models.CharField(max_length=255)
     body = models.TextField(blank=True)
     timestamp = models.DateTimeField(auto_now_add=True)
