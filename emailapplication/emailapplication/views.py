@@ -8,7 +8,7 @@ from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import get_user
 
-from .models import User, Email
+from .models import EmailUser, Email
 
 
 def index(request):
@@ -42,9 +42,9 @@ def compose(request):
     recipients = []
     for email in emails:
         try:
-            user = User.objects.get(email=email)
+            user = EmailUser.objects.get(email=email)
             recipients.append(user)
-        except User.DoesNotExist:
+        except EmailUser.DoesNotExist:
             return JsonResponse({
                 "error": f"User with email {email} does not exist."
             }, status=400)
@@ -53,6 +53,7 @@ def compose(request):
     subject = data.get("subject", "")
     body = data.get("body", "")
     sender = get_user(request)
+    sender = EmailUser.objects.get(email=sender.email)
 
     # Create one email for each recipient, plus sender
     users = set()
@@ -168,7 +169,7 @@ def register(request):
 
         # Attempt to create new user
         try:
-            user = User.objects.create_user(email, email, password)
+            user = EmailUser.objects.create_user(email, email, password)
             user.save()
         except IntegrityError as e:
             print(e)

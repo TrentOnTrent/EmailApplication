@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import User, Email
+from .models import EmailUser, Email
 
-admin.site.register(User)
+admin.site.register(EmailUser)
 admin.site.register(Email)
