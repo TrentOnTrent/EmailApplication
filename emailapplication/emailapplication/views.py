@@ -6,6 +6,7 @@ from django.http import JsonResponse
 from django.shortcuts import HttpResponse, HttpResponseRedirect, render
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth import get_user
 
 from .models import User, Email
 
@@ -51,18 +52,19 @@ def compose(request):
     # Get contents of email
     subject = data.get("subject", "")
     body = data.get("body", "")
+    sender = get_user(request)
 
     # Create one email for each recipient, plus sender
     users = set()
-    users.add(request.user)
+    users.add(sender)
     users.update(recipients)
     for user in users:
         email = Email(
             user=user,
-            sender=request.user,
+            sender=sender,
             subject=subject,
             body=body,
-            read=user == request.user
+            read=user == sender
         )
         email.save()
         for recipient in recipients:
